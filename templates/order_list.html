@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order List</title>
+</head>
+<body>
+    <h1>Orders</h1>
+    <ul>
+        {% for order in orders %}
+            <li>Order #{{ order.id }} - Amount: {{ order.total_amount }} - Created At: {{ order.created_at }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
