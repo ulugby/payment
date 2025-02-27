@@ -154,3 +154,11 @@ PAYME_ACCOUNT_MODEL = "orders.models.Order"
 PAYME_ONE_TIME_PAYMENT = env.str('PAYME_ONE_TIME_PAYMENT')
 TELEGRAM_BOT_TOKEN = env.str('TELEGRAM_BOT_TOKEN')
 
+
+
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
