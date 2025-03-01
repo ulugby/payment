@@ -23,11 +23,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-7@guxbg^u@j9$9ec9r%t$ebkpm^t0^nc1b=v3^x$gk$+-3n&wz"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '176.124.215.58', 'jononchickentolovuchun.uz']
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '176.124.215.58', 'jononchickentolovuchun.uz']
 
+ALLOWED_HOSTS = ['jononchickentolovuchun.uz', 'www.jononchickentolovuchun.uz', '176.124.215.58']
 
 # Application definition
 
@@ -135,7 +136,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = "static/"
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -170,9 +171,14 @@ CLICK_RETURN_URL = env.str("CLICK_RETURN_URL")
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 import os
 import logging
