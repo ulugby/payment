@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     "payme",
+    "clickuz",
     "orders",
     "rest_framework",
     'drf_yasg',
@@ -154,6 +155,15 @@ PAYME_AMOUNT_FIELD = "total_cost"
 PAYME_ACCOUNT_MODEL = "orders.models.Order"
 PAYME_ONE_TIME_PAYMENT = env.str('PAYME_ONE_TIME_PAYMENT')
 TELEGRAM_BOT_TOKEN = env.str('TELEGRAM_BOT_TOKEN')
+CHANNEL_ID = env.str("CHANNEL_ID")
+
+CLICK_SETTINGS = {
+    "service_id": env.str("CLICK_SERVICE_ID"),
+    "merchant_id": env.str("CLICK_MERCHANT_ID"),
+    "secret_key": env.str("CLICK_SECRET_KEY"),
+    "merchant_user_id": env.str("CLICK_MERCHANT_USER_ID"),
+}
+CLICK_RETURN_URL = env.str("CLICK_RETURN_URL")
 
 
 
@@ -163,3 +173,47 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+import os
+import logging
+import logging.config
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'errors.log'),
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'myapp': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
