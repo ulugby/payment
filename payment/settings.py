@@ -28,7 +28,9 @@ DEBUG = False
 
 # ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '176.124.215.58', 'jononchickentolovuchun.uz']
 
-ALLOWED_HOSTS = ['jononchickentolovuchun.uz', 'www.jononchickentolovuchun.uz', '176.124.215.58']
+# ALLOWED_HOSTS = ['jononchickentolovuchun.uz', 'www.jononchickentolovuchun.uz', '176.124.215.58']
+
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
