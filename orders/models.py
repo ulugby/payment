@@ -28,7 +28,7 @@ class Order(models.Model):
     )
     # payment_method = models.CharField(max_length=255)
     status = models.CharField(
-        max_length=20, choices=OrderStatus.choices, default=OrderStatus.CREATED, verbose_name='status'
+        max_length=20, choices=OrderStatus.choices, default=OrderStatus.PENDING, verbose_name='status'
     )
     is_paid = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -291,18 +291,23 @@ class OrderCheckAndPayment(ClickUz):
             "parse_mode": "HTML"
         }
         response = requests.post(url, data=params)
+        logger.info("Telegram message sent: %s", response.json())
         return response
 
     def check_order(self, order_id: str, amount: str):
         try:
+            logger.debug("Checking order with ID: %s and amount: %s", order_id, amount)
             orders = Order.objects.filter(id=order_id)
             if orders.exists():
                 order = orders.first()
                 if float(order.total_cost) == float(amount):
+                    logger.debug("Order found and amount is valid")
                     return self.ORDER_FOUND
                 else:
+                    logger.debug("Invalid amount")
                     return self.INVALID_AMOUNT
             else:
+                logger.debug("Order not found")
                 return self.ORDER_NOT_FOUND
         except Exception as e:
             logger.error("Error in check_order: %s", str(e))
@@ -310,6 +315,7 @@ class OrderCheckAndPayment(ClickUz):
 
     def successfully_payment(self, order_id: str, transaction: object):
         try:
+            logger.debug("Processing successful payment for order ID: %s", order_id)
             orders = Order.objects.filter(id=order_id)
             if orders.exists():
                 order = orders.first()
@@ -322,14 +328,18 @@ class OrderCheckAndPayment(ClickUz):
                 user_lang = order.user_lang_code
                 if user_lang == 'uz':
                     payment_message = f"Buyurtma raqami #{order.id} uchun to'lovingiz muvaffaqiyatli amalga oshirildi.\nJami: {order.total_cost} UZS."
-                if user_lang == 'ru':
+                elif user_lang == 'ru':
                     payment_message = f"Ваш платёж по заказу №{order.id} был успешно завершен.\nВсего: {order.total_cost} UZS."
+                else:
+                    payment_message = f"Your payment for order #{order.id} has been successfully processed.\nTotal: {order.total_cost} UZS."
 
                 # Send a message via the Telegram API
                 self.send_telegram_message(user_chat_id, payment_message)
 
+                logger.debug("Payment processed and Telegram message sent")
                 return self.ORDER_FOUND
             else:
+                logger.debug("Order not found")
                 return self.ORDER_NOT_FOUND
         except Exception as e:
             logger.error("Error in successfully_payment: %s", str(e))
