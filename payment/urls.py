@@ -19,11 +19,12 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-    path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+
+    path('api-payment/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('admin/', admin.site.urls),
     path('payment/', include('main.urls')),
-    path('orders/', include('orders.urls')),
+    path('', include('orders.urls')),
 ]
 
 from django.conf import settings

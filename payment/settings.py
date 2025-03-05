@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     "payme",
-    "clickuz",
+    "click_up",
     "orders",
     "rest_framework",
     'drf_yasg',
@@ -159,12 +159,19 @@ PAYME_ONE_TIME_PAYMENT = env.str('PAYME_ONE_TIME_PAYMENT')
 TELEGRAM_BOT_TOKEN = env.str('TELEGRAM_BOT_TOKEN')
 CHANNEL_ID = env.str("CHANNEL_ID")
 
-CLICK_SETTINGS = {
-    "service_id": env.str("CLICK_SERVICE_ID"),
-    "merchant_id": env.str("CLICK_MERCHANT_ID"),
-    "secret_key": env.str("CLICK_SECRET_KEY"),
-    "merchant_user_id": env.str("CLICK_MERCHANT_USER_ID"),
-}
+
+CLICK_SERVICE_ID=env.str("CLICK_SERVICE_ID")
+CLICK_MERCHANT_ID = env.str("CLICK_MERCHANT_ID")
+CLICK_SECRET_KEY = env.str("CLICK_SECRET_KEY")
+CLICK_ACCOUNT_MODEL = "orders.models.Order" # your order model path.
+CLICK_AMOUNT_FIELD = "total_cost" # your amount field that's belongs to your order model
+
+# CLICK_SETTINGS = {
+#     "service_id": env.str("CLICK_SERVICE_ID"),
+#     "merchant_id": env.str("CLICK_MERCHANT_ID"),
+#     "secret_key": env.str("CLICK_SECRET_KEY"),
+#     "merchant_user_id": env.str("CLICK_MERCHANT_USER_ID"),
+# }
 CLICK_RETURN_URL = env.str("CLICK_RETURN_URL")
 
 

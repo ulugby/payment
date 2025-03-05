@@ -45,9 +45,11 @@ from .serializers import OrderSerializer
 
 from rest_framework import views, response
 from payme import Payme
-from payment.settings import PAYME_ID, CLICK_RETURN_URL  # Add CLICK_RETURN_URL
+from payment.settings import PAYME_ID, CLICK_RETURN_URL, CLICK_SERVICE_ID, CLICK_MERCHANT_ID
 from rest_framework import status
-from clickuz import ClickUz  # Add ClickUz
+from click_up import ClickUp
+
+click_up = ClickUp(service_id=CLICK_SERVICE_ID, merchant_id=CLICK_MERCHANT_ID)
 
 payme = Payme(payme_id=PAYME_ID)
 
@@ -85,8 +87,8 @@ class OrderCreate(views.APIView):
         elif payment_method == 'click':
             try:
                 # Click API orqali to'lov havolasini yaratish
-                payment_link = ClickUz.generate_url(
-                    order_id=order.id,
+                payment_link = click_up.initializer.generate_pay_link(
+                    id=order.id,
                     amount=order.total_cost,
                     return_url=CLICK_RETURN_URL
                 )
@@ -103,3 +105,8 @@ class OrderCreate(views.APIView):
             )
 
         return response.Response(result, status=status.HTTP_201_CREATED)
+    
+from django.shortcuts import render
+
+def homepage(request):
+    return render(request, 'homepage.html')
