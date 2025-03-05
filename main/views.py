@@ -165,6 +165,8 @@ logger = logging.getLogger('payment')
 #         else:
 #             return self.ORDER_NOT_FOUND
 
+from clickuz.models import Transaction
+
 class PaymeCallBackAPIView(PaymeWebHookAPIView):
 
     def check_perform_transaction(self, params):
@@ -240,8 +242,10 @@ class PaymeCallBackAPIView(PaymeWebHookAPIView):
                 user_lang = order.user_lang_code
                 if user_lang == 'uz':
                     payment_message = f"Buyurtma raqami #{order.id} uchun to'lovingiz muvaffaqiyatli amalga oshirildi.\nJami: {order.total_cost} UZS."
-                if user_lang == 'ru':
+                elif user_lang == 'ru':
                     payment_message = f"Ваш платёж по заказу №{order.id} был успешно завершен.\nВсего: {order.total_cost} UZS."
+                else:
+                    payment_message = f"Your payment for order #{order.id} has been successfully processed.\nTotal: {order.total_cost} UZS."
 
                 # Send a message via the Telegram API
                 self.send_telegram_message(user_chat_id, payment_message)
@@ -281,8 +285,74 @@ class PaymeCallBackAPIView(PaymeWebHookAPIView):
             logger.error("Error in handle_cancelled_payment: %s", str(e))
             raise
 
-class OrderCheckAndPayment(ClickUz):
+# class OrderCheckAndPayment(ClickUz):
 
+#     def send_telegram_message(self, chat_id, text):
+#         url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+#         params = {
+#             "chat_id": chat_id,
+#             "text": text,
+#             "parse_mode": "HTML"
+#         }
+#         response = requests.post(url, data=params)
+#         logger.info("Telegram message sent: %s", response.json())
+#         return response
+
+#     def check_order(self, order_id: str, amount: str):
+#         try:
+#             logger.debug("Checking order with ID: %s and amount: %s", order_id, amount)
+#             orders = Order.objects.filter(id=order_id)
+#             if orders.exists():
+#                 order = orders.first()
+#                 if float(order.total_cost) == float(amount):
+#                     logger.debug("Order found and amount is valid")
+#                     return self.ORDER_FOUND
+#                 else:
+#                     logger.debug("Invalid amount")
+#                     return self.INVALID_AMOUNT
+#             else:
+#                 logger.debug("Order not found")
+#                 return self.ORDER_NOT_FOUND
+#         except Exception as e:
+#             logger.error("Error in check_order: %s", str(e))
+#             raise
+
+#     def successfully_payment(self, order_id: str, transaction: object):
+#         try:
+#             logger.debug("Processing successful payment for order ID: %s", order_id)
+#             orders = Order.objects.filter(id=order_id)
+#             if orders.exists():
+#                 order = orders.first()
+#                 order.status = Order.OrderStatus.PAID
+#                 order.is_paid = True
+#                 order.payment_method = Order.PaymentMethod.CLICK
+#                 order.save()
+
+#                 user_chat_id = order.chat_id  # Assuming `Order` has a `user` with `chat_id`
+#                 user_lang = order.user_lang_code
+#                 if user_lang == 'uz':
+#                     payment_message = f"Buyurtma raqami #{order.id} uchun to'lovingiz muvaffaqiyatli amalga oshirildi.\nJami: {order.total_cost} UZS."
+#                 elif user_lang == 'ru':
+#                     payment_message = f"Ваш платёж по заказу №{order.id} был успешно завершен.\nВсего: {order.total_cost} UZS."
+#                 else:
+#                     payment_message = f"Your payment for order #{order.id} has been successfully processed.\nTotal: {order.total_cost} UZS."
+
+#                 # Send a message via the Telegram API
+#                 self.send_telegram_message(user_chat_id, payment_message)
+
+#                 logger.debug("Payment processed and Telegram message sent")
+#                 return self.ORDER_FOUND
+#             else:
+#                 logger.debug("Order not found")
+#                 return self.ORDER_NOT_FOUND
+#         except Exception as e:
+#             logger.error("Error in successfully_payment: %s", str(e))
+#             raise
+
+# class ClickCallBackAPIView(ClickUzMerchantAPIView):
+#     VALIDATE_CLASS = OrderCheckAndPayment
+
+class OrderCheckAndPayment(ClickUz):
     def send_telegram_message(self, chat_id, text):
         url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
         params = {
@@ -313,7 +383,7 @@ class OrderCheckAndPayment(ClickUz):
             logger.error("Error in check_order: %s", str(e))
             raise
 
-    def successfully_payment(self, order_id: str, transaction: object):
+    def successfully_payment(self, order_id: str, transaction: Transaction):
         try:
             logger.debug("Processing successful payment for order ID: %s", order_id)
             orders = Order.objects.filter(id=order_id)
@@ -324,7 +394,11 @@ class OrderCheckAndPayment(ClickUz):
                 order.payment_method = Order.PaymentMethod.CLICK
                 order.save()
 
-                user_chat_id = order.chat_id  # Assuming `Order` has a `user` with `chat_id`
+                # Update transaction status
+                transaction.status = Transaction.FINISHED
+                transaction.save()
+
+                user_chat_id = order.chat_id
                 user_lang = order.user_lang_code
                 if user_lang == 'uz':
                     payment_message = f"Buyurtma raqami #{order.id} uchun to'lovingiz muvaffaqiyatli amalga oshirildi.\nJami: {order.total_cost} UZS."
@@ -343,6 +417,35 @@ class OrderCheckAndPayment(ClickUz):
                 return self.ORDER_NOT_FOUND
         except Exception as e:
             logger.error("Error in successfully_payment: %s", str(e))
+            raise
+
+    def cancel_payment(self, order_id: str, transaction: Transaction):
+        try:
+            logger.debug("Cancelling payment for order ID: %s", order_id)
+            orders = Order.objects.filter(id=order_id)
+            if orders.exists():
+                order = orders.first()
+                order.status = Order.OrderStatus.CANCELLED
+                order.is_paid = False
+                order.save()
+
+                # Update transaction status
+                transaction.status = Transaction.CANCELED
+                transaction.save()
+
+                user_chat_id = order.chat_id
+                cancellation_message = f"Your payment for Order #{order.id} was cancelled.\nPlease try again."
+
+                # Send a message via the Telegram API
+                self.send_telegram_message(user_chat_id, cancellation_message)
+
+                logger.debug("Payment cancelled and Telegram message sent")
+                return self.ORDER_FOUND
+            else:
+                logger.debug("Order not found")
+                return self.ORDER_NOT_FOUND
+        except Exception as e:
+            logger.error("Error in cancel_payment: %s", str(e))
             raise
 
 class ClickCallBackAPIView(ClickUzMerchantAPIView):
