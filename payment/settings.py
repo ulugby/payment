@@ -23,12 +23,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-7@guxbg^u@j9$9ec9r%t$ebkpm^t0^nc1b=v3^x$gk$+-3n&wz"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 
 # ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '176.124.215.58', 'jononchickentolovuchun.uz']
 
-ALLOWED_HOSTS = ['jononchickentolovuchun.uz', 'www.jononchickentolovuchun.uz', '176.124.215.58', 'www.visa.com.hk']
+ALLOWED_HOSTS = ['jononchickentolovuchun.uz', 'www.jononchickentolovuchun.uz', '176.124.215.58', 'www.visa.com.hk', '127.0.0.1']
 # ALLOWED_HOSTS = ['*']
 
 # Application definition
@@ -173,7 +173,7 @@ CLICK_AMOUNT_FIELD = "total_cost" # your amount field that's belongs to your ord
 #     "merchant_user_id": env.str("CLICK_MERCHANT_USER_ID"),
 # }
 CLICK_RETURN_URL = env.str("CLICK_RETURN_URL")
-
+DB_URL=env.str("DB_URL")
 
 
 import os

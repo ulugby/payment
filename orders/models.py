@@ -33,9 +33,12 @@ class Order(models.Model):
     is_paid = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    chat_id = models.PositiveBigIntegerField(default='2083239343')
+    chat_id = models.BigIntegerField(default='2083239343', null=True, blank=True)
     items = models.JSONField(default=list)  # Added items field to store order items
     user_lang_code = models.CharField(max_length=10, default='uz')
+    telegram_id = models.BigIntegerField(null=True, blank=True)
+    message_id = models.BigIntegerField(null=True, blank=True)
+    bot_order_id = models.PositiveBigIntegerField(blank=True, null=True, verbose_name='bot_order_id')
 
     def __str__(self):
         return f"Order #{self.id} - {self.total_cost} - {self.status}"
