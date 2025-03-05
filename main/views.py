@@ -302,9 +302,8 @@ class ClickWebhookAPIView(ClickWebhook):
         response = requests.post(url, data=params)
         return response
     
-    def created_payment(self, params, result, *args, **kwargs):
+    def created_payment(self, params, *args, **kwargs):
         try:
-            print("created_payment", result)
             transaction = ClickTransaction.objects.get(
                 transaction_id=params.click_trans_id
             )
@@ -319,9 +318,8 @@ class ClickWebhookAPIView(ClickWebhook):
             logger.error("Error in created_payment: %s", str(e))
             raise
 
-    def successfully_payment(self, params, result, *args, **kwargs):
+    def successfully_payment(self, params, *args, **kwargs):
         try:
-            print("successfully_payment", result)
             transaction = ClickTransaction.objects.get(
                 transaction_id=params.click_trans_id
             )
@@ -350,9 +348,8 @@ class ClickWebhookAPIView(ClickWebhook):
             logger.error("Error in successfully_payment: %s", str(e))
             raise
 
-    def cancelled_payment(self, params, result, *args, **kwargs):
+    def cancelled_payment(self, params, *args, **kwargs):
         try:
-            print("cancelled_payment", result)
             transaction = ClickTransaction.objects.get(
                 transaction_id=params.click_trans_id
             )
